@@ -45,4 +45,6 @@
   <img alt="pacman contribution graph" src="https://profile-readme-generator.com/assets/pacman.svg">
 </picture>
 
+<img src="https://github-readme-stats.vercel.app/api?username=B4nJuice&show_icons=true&theme=dark">
+
 ###
