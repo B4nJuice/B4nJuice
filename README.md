@@ -29,6 +29,7 @@
 ###
 
 <div align="center">
+  <img src="https://github-readme-stats.vercel.app/api?username=B4nJuice&show_icons=true&theme=dark">
   <a href="discord.com/users/777497833053880351" target="_blank">
     <img src="https://img.shields.io/static/v1?message=Discord&logo=discord&label=&color=7289DA&logoColor=white&labelColor=&style=for-the-badge" height="25" alt="discord logo"  />
   </a>
@@ -45,6 +46,5 @@
   <img alt="pacman contribution graph" src="https://profile-readme-generator.com/assets/pacman.svg">
 </picture>
 
-<img src="https://github-readme-stats.vercel.app/api?username=B4nJuice&show_icons=true&theme=dark">
 
 ###
