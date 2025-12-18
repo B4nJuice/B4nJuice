@@ -32,7 +32,7 @@
   <img src="https://github-readme-stats.vercel.app/api?username=B4nJuice&show_icons=true&theme=dark">
 </div>
 <div align="center">
-  <a href="discord.com/users/777497833053880351" target="_blank">
+  <a href="https://discord.com/users/777497833053880351" target="_blank">
     <img src="https://img.shields.io/static/v1?message=Discord&logo=discord&label=&color=7289DA&logoColor=white&labelColor=&style=for-the-badge" height="25" alt="discord logo"  />
   </a>
   <a href="https://stackoverflow.com/users/22375722/bananoo" target="_blank">
