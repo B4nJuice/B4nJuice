@@ -29,8 +29,8 @@
 ###
 
 <div align="center">
-  ![](https://komarev.com/ghpvc/?username=your-github-username)
   <img src="https://github-readme-stats.vercel.app/api?username=B4nJuice&show_icons=true&theme=dark">
+  <img src="https://komarev.com/ghpvc/?username=B4nJuice">
 </div>
 <div align="center">
   <a href="https://discord.com/users/777497833053880351" target="_blank">
