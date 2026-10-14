@@ -1,8 +1,8 @@
+## GitHub activity
+
 <div align="center">
 
-# B4nJuice
-
-<sub>Software developer · Student · Always learning</sub>
+<img src="https://github-readme-activity-graph.vercel.app/graph?username=B4nJuice&theme=github-compact&hide_border=true" width="95%" alt="GitHub contribution activity">
 
 </div>
 
@@ -14,7 +14,7 @@
 
 </div>
 
-## GitHub
+## GitHub statistics
 
 <div align="center">
 
@@ -24,9 +24,5 @@
 <br><br>
 
 <img src="https://streak-stats.demolab.com?user=B4nJuice&hide_border=true&background=ffffff&ring=555555&fire=555555&currStreakLabel=111111&sideLabels=555555&dates=777777" alt="Contribution streak">
-
-<br><br>
-
-<img src="https://github-readme-activity-graph.vercel.app/graph?username=B4nJuice&bg_color=ffffff&color=555555&line=333333&point=111111&area=false&hide_border=true" width="95%" alt="Contribution activity graph">
 
 </div>
