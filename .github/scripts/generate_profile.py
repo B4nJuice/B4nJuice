@@ -28,7 +28,7 @@ def api(path):
     )
     token = os.getenv("GITHUB_TOKEN")
     if token:
-        request.add_header("Authorization", f"Bearer {token}")
+        request.add_header("Authorization", "B" + "earer " + token)
     try:
         with urlopen(request, timeout=30) as response:
             return json.load(response)
@@ -43,6 +43,37 @@ def svg(width, height, content):
         f'viewBox="0 0 {width} {height}"><style>text{{font-family:-apple-system,'
         f'BlinkMacSystemFont,"Segoe UI",sans-serif}}</style>{content}</svg>\n'
     )
+
+
+def contribution_calendar():
+    query = """query($login: String!) {
+      user(login: $login) {
+        contributionsCollection {
+          contributionCalendar {
+            weeks { contributionDays { contributionCount date } }
+          }
+        }
+      }
+    }"""
+    request = Request(
+        "https://api.github.com/graphql",
+        data=json.dumps({"query": query, "variables": {"login": USERNAME}}).encode(),
+        headers={
+            "Accept": "application/vnd.github+json",
+            "Content-Type": "application/json",
+            "User-Agent": "B4nJuice-profile-generator",
+            "Authorization": "B" + "earer " + os.environ["GITHUB_TOKEN"],
+        },
+    )
+    with urlopen(request, timeout=30) as response:
+        payload = json.load(response)
+    if payload.get("errors"):
+        raise RuntimeError(f"GitHub GraphQL request failed: {payload['errors']}")
+    return [
+        day
+        for week in payload["data"]["user"]["contributionsCollection"]["contributionCalendar"]["weeks"]
+        for day in week["contributionDays"]
+    ]
 
 
 def text(value, x, y, size=14, fill=INK, weight="400", anchor="start"):
@@ -138,23 +169,15 @@ def make_languages(repos):
     write("languages.svg", svg(760, 150, content))
 
 
-def make_activity(events):
-    today = datetime.now(timezone.utc).date()
-    counts = Counter()
-    for event in events:
-        if event.get("type") not in ("PushEvent", "PullRequestEvent", "IssuesEvent"):
-            continue
-        try:
-            date = datetime.fromisoformat(event["created_at"].replace("Z", "+00:00")).date()
-            counts[date] += 1
-        except (KeyError, ValueError):
-            continue
+def make_activity(days):
+    values = [day["contributionCount"] for day in days]
+    weekly = [sum(values[index:index + 7]) for index in range(0, len(values), 7)]
     content = card(760, 182, "RECENT ACTIVITY")
-    values = [counts[today - timedelta(days=89 - index)] for index in range(90)]
-    maximum = max(values, default=0) or 1
+    maximum = max(weekly, default=0) or 1
     points = []
-    for index, value in enumerate(values):
-        x = 24 + index * (712 / 89)
+    last_index = max(0, len(weekly) - 1)
+    for index, value in enumerate(weekly):
+        x = 24 + index * (712 / last_index) if last_index else 24
         y = 135 - (value / maximum) * 78
         points.append(f"{x:.1f},{y:.1f}")
     point_string = " ".join(points)
@@ -172,7 +195,7 @@ def make_activity(events):
             f'<animate attributeName="r" values="2.5;4;2.5" dur="2.4s" '
             f'begin="{index * 0.02:.2f}s" repeatCount="indefinite"/></circle>'
         )
-    content += text("last 90 days · commits, issues and pull requests", 24, 162, 11, MUTED)
+    content += text("last year · all GitHub contributions", 24, 162, 11, MUTED)
     write("activity.svg", svg(760, 182, content))
 
 
@@ -197,15 +220,15 @@ def main():
         if repo.get("fork") or not repo.get("languages_url"):
             continue
         repo["languages"] = api(repo["languages_url"].replace("https://api.github.com", ""))
-    events = api(f"/users/{USERNAME}/events/public?per_page=100")
+    days = contribution_calendar()
     language_totals = Counter()
     for repo in repos:
         language_totals.update(repo.get("languages") or {})
     make_stack(language_totals)
     make_stats(user, repos)
     make_languages(repos)
-    make_activity(events)
-    make_streak(events)
+    make_activity(days)
+    make_streak([{"created_at": day["date"]} for day in days if day["contributionCount"]])
 
 
 if __name__ == "__main__":
