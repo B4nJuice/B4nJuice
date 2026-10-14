@@ -181,7 +181,15 @@ def make_activity(days):
         y = 135 - (value / maximum) * 78
         points.append(f"{x:.1f},{y:.1f}")
     point_string = " ".join(points)
-    content += f'<line x1="24" y1="135" x2="736" y2="135" stroke="{GRID}" stroke-opacity=".2"/>'
+    for fraction in (1, 0.5, 0):
+        y = 135 - fraction * 78
+        value = maximum * fraction
+        label = f"{value:g}"
+        content += (
+            f'<line x1="24" y1="{y:g}" x2="736" y2="{y:g}" '
+            f'stroke="{GRID}" stroke-opacity=".12"/>'
+            f'{text(label, 4, y + 4, 9, MUTED, "400", "start")}'
+        )
     content += (
         f'<polyline points="{point_string}" fill="none" stroke="{INK}" stroke-width="2" '
         f'stroke-linecap="round" stroke-linejoin="round" pathLength="1" '
@@ -207,10 +215,27 @@ def make_streak(events):
     while day.isoformat() in dates:
         streak += 1
         day -= timedelta(days=1)
+    best_streak = 0
+    best_end = None
+    run = 0
+    for day in sorted(datetime.strptime(date, "%Y-%m-%d").date() for date in dates):
+        previous = day - timedelta(days=1)
+        if previous.isoformat() in dates:
+            run += 1
+        else:
+            run = 1
+        if run > best_streak:
+            best_streak = run
+            best_end = day
     content = card(760, 112, "CURRENT STREAK")
     content += text(streak, 28, 78, 32, INK, "700")
     content += text("days", 84, 76, 14, MUTED)
     content += text("based on recent public GitHub activity", 24, 96, 11, MUTED)
+    content += text("BEST STREAK", 520, 31, 13, MUTED, "600")
+    content += text(best_streak, 524, 78, 32, INK, "700")
+    content += text("days", 580, 76, 14, MUTED)
+    best_date = best_end.strftime("%d %b %Y") if best_end else "No contribution streak"
+    content += text(f"ending {best_date}", 520, 96, 11, MUTED)
     write("streak.svg", svg(760, 112, content))
 
 
