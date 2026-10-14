@@ -12,10 +12,10 @@ from urllib.request import Request, urlopen
 
 USERNAME = "B4nJuice"
 OUT = os.path.join(os.path.dirname(__file__), "..", "..", "assets")
-INK = "#242424"
-MUTED = "#6b6b6b"
-GRID = "#e5e5e5"
-ACCENTS = ("#d6d6d6", "#b5b5b5", "#8f8f8f", "#5f5f5f", "#242424")
+INK = "#ffffff"
+MUTED = "#ffffff"
+GRID = "#ffffff"
+ACCENTS = ("#d0d0d0", "#b8b8b8", "#9f9f9f", "#858585", "#ffffff")
 
 
 def api(path):
@@ -55,7 +55,7 @@ def text(value, x, y, size=14, fill=INK, weight="400", anchor="start"):
 def card(width, height, title):
     return (
         f'<rect x="1" y="1" width="{width - 2}" height="{height - 2}" rx="8" '
-        f'fill="none" stroke="{GRID}" stroke-opacity=".7"/>{text(title, 24, 31, 13, MUTED, "600")}'
+        f'fill="none" stroke="{GRID}" stroke-opacity=".25"/>{text(title, 24, 31, 13, MUTED, "600")}'
     )
 
 
@@ -150,18 +150,29 @@ def make_activity(events):
         except (KeyError, ValueError):
             continue
     content = card(760, 182, "RECENT ACTIVITY")
-    for index in range(90):
-        date = today - timedelta(days=89 - index)
-        level = min(4, counts[date])
-        x = 24 + (index % 45) * 15
-        y = 49 + (index // 45) * 15
-        delay = index * 0.025
+    values = [counts[today - timedelta(days=89 - index)] for index in range(90)]
+    maximum = max(values, default=0) or 1
+    points = []
+    for index, value in enumerate(values):
+        x = 24 + index * (712 / 89)
+        y = 135 - (value / maximum) * 78
+        points.append(f"{x:.1f},{y:.1f}")
+    point_string = " ".join(points)
+    content += f'<line x1="24" y1="135" x2="736" y2="135" stroke="{GRID}" stroke-opacity=".2"/>'
+    content += (
+        f'<polyline points="{point_string}" fill="none" stroke="{INK}" stroke-width="2" '
+        f'stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="900" '
+        f'stroke-dashoffset="900"><animate attributeName="stroke-dashoffset" '
+        f'from="900" to="0" dur="2.8s" fill="freeze"/></polyline>'
+    )
+    for index, point in enumerate(points):
+        x, y = point.split(",")
         content += (
-            f'<rect x="{x}" y="{y}" width="10" height="10" rx="2" fill="{ACCENTS[level]}">'
-            f'<animate attributeName="opacity" values=".45;1;.45" dur="3s" '
-            f'begin="{delay:.3f}s" repeatCount="indefinite"/></rect>'
+            f'<circle cx="{x}" cy="{y}" r="2.5" fill="{INK}">'
+            f'<animate attributeName="r" values="2.5;4;2.5" dur="2.4s" '
+            f'begin="{index * 0.02:.2f}s" repeatCount="indefinite"/></circle>'
         )
-    content += text("last 90 days · commits, issues and pull requests", 24, 145, 11, MUTED)
+    content += text("last 90 days · commits, issues and pull requests", 24, 162, 11, MUTED)
     write("activity.svg", svg(760, 182, content))
 
 
