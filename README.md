@@ -2,17 +2,12 @@
 
 <img src="./assets/activity.svg" width="95%" alt="GitHub contribution activity">
 
-## Stack
+## Language distribution
 
-<img src="./assets/stack.svg" alt="Technology stack">
+<img src="./assets/languages.svg" width="95%" alt="Language distribution">
 
-## GitHub statistics
+## Streak
 
-<img src="./assets/stats.svg" width="49%" alt="GitHub statistics">
-<img src="./assets/languages.svg" width="49%" alt="Most used languages">
-
-<br>
-
-<img src="./assets/streak.svg" width="70%" alt="Contribution streak">
+<img src="./assets/streak.svg" width="95%" alt="Contribution streak">
 
 </div>

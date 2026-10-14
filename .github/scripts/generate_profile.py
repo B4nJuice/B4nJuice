@@ -184,9 +184,10 @@ def make_activity(days):
     content += f'<line x1="24" y1="135" x2="736" y2="135" stroke="{GRID}" stroke-opacity=".2"/>'
     content += (
         f'<polyline points="{point_string}" fill="none" stroke="{INK}" stroke-width="2" '
-        f'stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="900" '
-        f'stroke-dashoffset="900"><animate attributeName="stroke-dashoffset" '
-        f'from="900" to="0" dur="2.8s" fill="freeze"/></polyline>'
+        f'stroke-linecap="round" stroke-linejoin="round" pathLength="1" '
+        f'stroke-dasharray="1" stroke-dashoffset="1">'
+        f'<animate attributeName="stroke-dashoffset" from="1" to="0" '
+        f'dur="2.8s" fill="freeze"/></polyline>'
     )
     for index, point in enumerate(points):
         x, y = point.split(",")
@@ -214,18 +215,12 @@ def make_streak(events):
 
 
 def main():
-    user = api(f"/users/{USERNAME}")
     repos = api(f"/users/{USERNAME}/repos?per_page=100&sort=updated")
     for repo in repos:
         if repo.get("fork") or not repo.get("languages_url"):
             continue
         repo["languages"] = api(repo["languages_url"].replace("https://api.github.com", ""))
     days = contribution_calendar()
-    language_totals = Counter()
-    for repo in repos:
-        language_totals.update(repo.get("languages") or {})
-    make_stack(language_totals)
-    make_stats(user, repos)
     make_languages(repos)
     make_activity(days)
     make_streak([{"created_at": day["date"]} for day in days if day["contributionCount"]])
