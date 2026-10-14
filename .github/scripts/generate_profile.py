@@ -40,8 +40,8 @@ def api(path):
 def svg(width, height, content):
     return (
         f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" '
-        f'viewBox="0 0 {width} {height}"><style>text{{font-family:-apple-system,'
-        f'BlinkMacSystemFont,"Segoe UI",sans-serif}}</style>{content}</svg>\n'
+        f'viewBox="0 0 {width} {height}"><style>text{{font-family:"JetBrains Mono",'
+        f'monospace}}</style>{content}</svg>\n'
     )
 
 
@@ -172,7 +172,14 @@ def make_languages(repos):
 def make_activity(days):
     values = [day["contributionCount"] for day in days]
     weekly = [sum(values[index:index + 7]) for index in range(0, len(values), 7)]
-    content = card(760, 182, "RECENT ACTIVITY")
+    total_contributions = sum(values)
+    active_days = sum(value > 0 for value in values)
+    best_week = max(weekly, default=0)
+    content = card(760, 182, f"{total_contributions} CONTRIBUTIONS IN THE LAST YEAR")
+    content += text(
+        f"{active_days} ACTIVE DAYS · BEST WEEK {best_week}",
+        736, 31, 10, MUTED, "600", "end"
+    )
     maximum = max(weekly, default=0) or 1
     points = []
     last_index = max(0, len(weekly) - 1)
