@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Generate monochrome SVG profile assets from GitHub's public API."""
 
+import base64
 import json
 import os
 import re
@@ -97,7 +98,14 @@ def write(name, content):
 
 
 def make_profile(user):
-    avatar_url = escape(user["avatar_url"], quote=True)
+    avatar_request = Request(
+        f'{user["avatar_url"]}&s=256',
+        headers={"User-Agent": "B4nJuice-profile-generator"},
+    )
+    with urlopen(avatar_request, timeout=30) as response:
+        avatar_type = response.headers.get_content_type()
+        avatar_data = base64.b64encode(response.read()).decode("ascii")
+    avatar_url = f"data:{avatar_type};base64,{avatar_data}"
     content = (
         '<defs><clipPath id="avatar-clip"><circle cx="88" cy="88" r="64"/></clipPath></defs>'
         f'<image href="{avatar_url}" x="24" y="24" '
