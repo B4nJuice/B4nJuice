@@ -96,6 +96,21 @@ def write(name, content):
         asset.write(content)
 
 
+def make_profile():
+    content = (
+        '<defs><clipPath id="avatar-clip"><circle cx="88" cy="88" r="64"/></clipPath></defs>'
+        '<image href="https://github.com/B4nJuice.png?size=256" x="24" y="24" '
+        'width="128" height="128" preserveAspectRatio="xMidYMid slice" clip-path="url(#avatar-clip)"/>'
+        f'{text("B4nJuice", 184, 49, 24, INK, "700")}'
+        f'{text("STACKS", 184, 78, 11, MUTED, "600")}'
+        f'{text("Python · C · JavaScript · Makefile · GLSL", 184, 97, 12, INK)}'
+        f'{text("ABOUT", 184, 124, 11, MUTED, "600")}'
+        f'{text("Lorem ipsum dolor sit amet, consectetur adipiscing elit.", 184, 143, 11, INK)}'
+        f'{text("Curabitur blandit tempus porttitor, integer posuere erat.", 184, 160, 11, INK)}'
+    )
+    write("profile.svg", svg(760, 184, content))
+
+
 def logo_name(language):
     return re.sub(r"[^a-z0-9]+", "-", language.lower()).strip("-") or "language"
 
@@ -253,6 +268,7 @@ def main():
             continue
         repo["languages"] = api(repo["languages_url"].replace("https://api.github.com", ""))
     days = contribution_calendar()
+    make_profile()
     make_languages(repos)
     make_activity(days)
     make_streak([{"created_at": day["date"]} for day in days if day["contributionCount"]])
