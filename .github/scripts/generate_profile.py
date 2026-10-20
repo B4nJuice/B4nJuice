@@ -3,10 +3,10 @@
 
 import json
 import os
-import sys
 import re
+import sys
 from collections import Counter
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from html import escape
 from urllib.request import Request, urlopen
 
@@ -96,17 +96,17 @@ def write(name, content):
         asset.write(content)
 
 
-def make_profile():
+def make_profile(user):
+    avatar_url = escape(user["avatar_url"], quote=True)
     content = (
         '<defs><clipPath id="avatar-clip"><circle cx="88" cy="88" r="64"/></clipPath></defs>'
-        '<image href="https://github.com/B4nJuice.png?size=256" x="24" y="24" '
+        f'<image href="{avatar_url}" x="24" y="24" '
         'width="128" height="128" preserveAspectRatio="xMidYMid slice" clip-path="url(#avatar-clip)"/>'
-        f'{text("B4nJuice", 184, 49, 24, INK, "700")}'
+        f'{text(user["login"], 184, 49, 24, INK, "700")}'
         f'{text("STACKS", 184, 78, 11, MUTED, "600")}'
-        f'{text("Python · C · JavaScript · Makefile · GLSL", 184, 97, 12, INK)}'
+        f'{text("Python · C · AI · Makefile", 184, 97, 12, INK)}'
         f'{text("ABOUT", 184, 124, 11, MUTED, "600")}'
-        f'{text("Lorem ipsum dolor sit amet, consectetur adipiscing elit.", 184, 143, 11, INK)}'
-        f'{text("Curabitur blandit tempus porttitor, integer posuere erat.", 184, 160, 11, INK)}'
+        f'{text("42 Lyon student", 184, 143, 11, INK)}'
     )
     write("profile.svg", svg(760, 184, content))
 
@@ -233,7 +233,7 @@ def make_activity(days):
 def make_streak(events):
     dates = {event.get("created_at", "")[:10] for event in events}
     streak = 0
-    day = datetime.now(timezone.utc).date()
+    day = datetime.now(UTC).date()
     while day.isoformat() in dates:
         streak += 1
         day -= timedelta(days=1)
@@ -262,13 +262,14 @@ def make_streak(events):
 
 
 def main():
+    user = api(f"/users/{USERNAME}")
     repos = api(f"/users/{USERNAME}/repos?per_page=100&sort=updated")
     for repo in repos:
         if repo.get("fork") or not repo.get("languages_url"):
             continue
         repo["languages"] = api(repo["languages_url"].replace("https://api.github.com", ""))
     days = contribution_calendar()
-    make_profile()
+    make_profile(user)
     make_languages(repos)
     make_activity(days)
     make_streak([{"created_at": day["date"]} for day in days if day["contributionCount"]])
